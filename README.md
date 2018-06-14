@@ -19,15 +19,15 @@ See this page for generate it from the library:
 
 ## Seup
 
-Clone the repository of the project in the `/root` folder of the Shibboleth idp server:
+Clone the repository of the project in the `/usr/local/src` folder of the Shibboleth idp server:
 
 ```
 git clone https://github.com/AlessiaVe/shibboleth_django-freeradius_login.git
 ```
 
-Move into the `src` directory:
+Move into the sources directory:
 ```
-cd src
+cd shibboleth_django-freeradius_login/src/Django/jaas
 ```
 ### jaas.config
 Open the file /conf/authn/password_authn_config.xml, and modify as following:
@@ -60,7 +60,7 @@ After generate the .jar file, raname it like `unirest.jar` and copy it in the `s
 
 ### Build the project
 
-This code has to be compiled and move to the principal directory of the Java enviroment. 
+This code has to be compiled and moved to the principal directory of the Java enviroment. 
 So I suggest to use a `build.sh` in the `src` folder to do it automatically. 
 The file is like the following, please adjust JAVA_HOME and Shibboleth installation folder according to your environment:
 
@@ -68,18 +68,17 @@ The file is like the following, please adjust JAVA_HOME and Shibboleth installat
 JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre
 SHIBBOLETH_FOLDER=/opt/shibboleth-idp
 
-cp /root/shibboleth_django-freeradius_login/src/unirest.jar              $JAVA_HOME/lib/ext/
+cp unirest.jar              $JAVA_HOME/lib/ext/
 
-javac -cp /root/shibboleth_django-freeradius_login/src/unirest.jar Django/jaas/DjangoLoginModule.java
-javac Django/jaas/DjangoPrincipal.java
-jar cvf Django.jar Django/jaas/*.class
+javac -cp unirest.jar DjangoLoginModule.java
+javac DjangoPrincipal.java
+jar cvf Django.jar *.class
 
-cp /root/shibboleth_django-freeradius_login/src/Django.jar               $JAVA_HOME/lib/ext/
-cp /root/shibboleth_django-freeradius_login/src/jaas.config              $SHIBBOLETH_FOLDER/conf/authn
+cp Django.jar               $JAVA_HOME/lib/ext/
 ```
 
 This file copies the unirest.jar into the JAVA_HOME directory, compiles the two java files with the dependency and 
-copies the jar and the jaas.config files into the JAVA_HOME.
+copies the jar files into the JAVA_HOME.
 
 
 ## Run the project
