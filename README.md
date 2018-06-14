@@ -30,7 +30,16 @@ Move into the `src` directory:
 cd src
 ```
 ### jaas.config
-Create a file `jaas.config` in this directory:
+Open the file /conf/authn/password_authn_config.xml, and modify as following:
+
+```
+ <import resource="jaas-authn-config.xml">
+ <!-- <import resource="krb5-authn-config.xml" /> -->
+ <!-- <import resource="ldap-authn-config.xml" /> -->
+```
+to disable ldap authenticator and enable jaas authenticator.
+
+Create or replace the file jaas.config under /conf/authn use the following content:
 
 ```
 ShibUserPassAuth {
@@ -39,10 +48,10 @@ ShibUserPassAuth {
 };
 
 ```
-This file sets up the DjangoLoginModule as sufficient for the authentication of the user. The option djangoUrl is the url
-of the Django REST framework to the authorize page:
+This file sets up the DjangoLoginModule as sufficient for the authentication of the user. 
+The option djangoUrl is the url of the Django REST framework to the authorize page:
 * ip is the ip of the machine where there is the django server;
-* port is the port where we have set up the rest interface of Django.
+* port is the port where we have set up the REST interface of Django.
 
 ### Unirest library
 
@@ -51,11 +60,13 @@ After generate the .jar file, raname it like `unirest.jar` and copy it in the `s
 
 ### Build the project
 
-This code has to be compiled and move to the principal directory of the Java enviroment. So I suggest to make a `build.sh` 
-in the `src` folder to do it automatically. The file is like this:
+This code has to be compiled and move to the principal directory of the Java enviroment. 
+So I suggest to use a `build.sh` in the `src` folder to do it automatically. 
+The file is like the following, please adjust JAVA_HOME and Shibboleth installation folder according to your environment:
 
 ```
 JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre
+SHIBBOLETH_FOLDER=/opt/shibboleth-idp
 
 cp /root/shibboleth_django-freeradius_login/src/unirest.jar              $JAVA_HOME/lib/ext/
 
@@ -64,21 +75,20 @@ javac Django/jaas/DjangoPrincipal.java
 jar cvf Django.jar Django/jaas/*.class
 
 cp /root/shibboleth_django-freeradius_login/src/Django.jar               $JAVA_HOME/lib/ext/
-cp /root/shibboleth_django-freeradius_login/src/jaas.config              /opt/shibboleth-idp/conf/authn
+cp /root/shibboleth_django-freeradius_login/src/jaas.config              $SHIBBOLETH_FOLDER/conf/authn
 ```
 
-This file copies the unirest.jar into the JAVA_HOME directory, copiles the two java files with the dependency and 
+This file copies the unirest.jar into the JAVA_HOME directory, compiles the two java files with the dependency and 
 copies the jar and the jaas.config files into the JAVA_HOME.
 
 
 ## Run the project
 
-To start use the module, It's necessary run the `build.sh` file with:
+To start use the module run the `build.sh` file with:
 ```
 ./build.sh
 ```
-and restart the server with:
-```/root/restart.sh```
+and restart Tomcat or Jetty.
 
 After that, the idp authenticates only the Django users.
 Hope you enjoy!
